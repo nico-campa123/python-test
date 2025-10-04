@@ -1,5 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import joblib
+import sklearn
+import pandas as pd
+
 
 app = FastAPI()
 
@@ -11,6 +15,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+df=pd.read_csv("cumulative_2025.10.04_05.21.55.csv")
+model=joblib.load("stackin.pkl")
+
 
 
 @app.get("/")
