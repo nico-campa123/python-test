@@ -1,17 +1,14 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import joblib
-import sklearn
+import joblib, sklearn, os, sys
 import pandas as pd
-import os
-import sys
 
 app = FastAPI()
 
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # replace * with your frontend domain later
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +27,7 @@ except FileNotFoundError:
     raise
 
 
-model=joblib.load("stackin.pkl")
+model=joblib.load(MODEL_FILE_NAME)
 
 
 
