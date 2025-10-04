@@ -3,4 +3,4 @@ uvicorn[standard]
 python-multipart
 pandas
 joblib
-sklearn
+scikit-learn
