@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model=joblib.load("stackin.pkl")
+model=joblib.load("./stackin.pkl")
 
 
 
