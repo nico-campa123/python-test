@@ -16,8 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-df=pd.read_csv("cumulative_2025.10.04_05.21.55.csv")
 model=joblib.load("stackin.pkl")
 
 
