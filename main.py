@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import sklearn
 import pandas as pd
-
+import os
+import sys
 
 app = FastAPI()
 
@@ -16,7 +17,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model=joblib.load("./stackin.pkl")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE_NAME = "stackin.pkl"
+MODEL_PATH = os.path.join(BASE_DIR, MODEL_FILE_NAME)
+
+try:
+    model = joblib.load(MODEL_PATH)
+    print(f"Model loaded successfully from: {MODEL_PATH}", file=sys.stderr) 
+
+except FileNotFoundError:
+    print(f"FATAL ERROR: Model file not found at {MODEL_PATH}", file=sys.stderr)
+    raise
+
+
+model=joblib.load("stackin.pkl")
 
 
 
