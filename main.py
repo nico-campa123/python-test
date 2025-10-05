@@ -14,18 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Path to model
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_FILE_NAME = "stacking.pkl"
-MODEL_PATH = os.path.join(BASE_DIR, MODEL_FILE_NAME)
-
-# Load model once
-try:
-    model = joblib.load(MODEL_PATH)
-    print(f"✅ Model loaded successfully from: {MODEL_PATH}", file=sys.stderr)
-except FileNotFoundError:
-    print(f"❌ ERROR: Model file not found at {MODEL_PATH}", file=sys.stderr)
-    raise
 
 
 @app.get("/")
@@ -46,3 +35,5 @@ async def upload_csv(file: UploadFile = File(...)):
         return {"rows": df.shape[0], "columns": df.shape[1]}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error reading CSV: {str(e)}")
+
+
