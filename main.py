@@ -123,7 +123,7 @@ async def upload_csv(file: UploadFile = File(...)):
     return {"predictions": paired}
 
 @app.get("/campa")
-async def root():
+async def tr():
     kepler = df.drop(columns=['koi_disposition'], errors='ignore')
     non_numeric_cols = kepler.select_dtypes(exclude=np.number).columns.tolist()
     X = kepler.drop(columns=non_numeric_cols)
