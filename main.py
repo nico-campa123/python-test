@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 from io import StringIO
 from sklearn.preprocessing import StandardScaler
-import logging, sys
 
 app = FastAPI()
 
@@ -18,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FILE_NAME = "Stacking_fp.pkl"
+FILE_NAME = "stacking.pkl"
 model = joblib.load(FILE_NAME)
 
 @app.get("/")
@@ -52,7 +51,6 @@ async def upload_csv(file: UploadFile = File(...)):
     ]
     df = df_init.drop(columns=[c for c in drop if c in df_init.columns], errors="ignore")
 
-    df=df.drop(columns=['koi_disposition'])
     # Replace NaN with median
     df = df.fillna(df.median(numeric_only=True))
 
@@ -70,19 +68,6 @@ async def upload_csv(file: UploadFile = File(...)):
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        handlers=[logging.StreamHandler(sys.stdout)])
-
-    # If running under gunicorn, attach gunicorn handlers to the root logger so messages show up
-    try:
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        if gunicorn_logger.handlers:
-            logging.getLogger().handlers = gunicorn_logger.handlers
-            logging.getLogger().setLevel(gunicorn_logger.level)
-    except Exception:
-        pass
     # Make predictions
     preds = model.predict(X_scaled)
     preds_list = [int(p) for p in preds]
