@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from io import StringIO
 from sklearn.preprocessing import StandardScaler
+import logging
 
 app = FastAPI()
 
@@ -67,6 +68,10 @@ async def upload_csv(file: UploadFile = File(...)):
     # Scale features
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
+
+    logging.info(f"Columns: {X.columns.tolist()}")
+    logging.info(f"Scaled Data: {X_scaled}")
+    logging.info(f"{X_scaled.shape}")
 
     # Make predictions
     preds = model.predict(X_scaled)
