@@ -127,5 +127,6 @@ async def tr():
     kepler = df.drop(columns=['koi_disposition'], errors='ignore')
     non_numeric_cols = kepler.select_dtypes(exclude=np.number).columns.tolist()
     X = kepler.drop(columns=non_numeric_cols)
+    X= StandardScaler().fit_transform(X)
     a = model.predict(X)
     return {"message": "Hello from FastAPI on Render!", "predictions": a}
