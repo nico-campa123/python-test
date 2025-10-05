@@ -16,7 +16,7 @@ app.add_middleware(
 
 # Path to model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_FILE_NAME = "stackin.pkl"
+MODEL_FILE_NAME = "stacking.pkl"
 MODEL_PATH = os.path.join(BASE_DIR, MODEL_FILE_NAME)
 
 # Load model once
