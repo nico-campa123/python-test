@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import joblib, os
+import joblib
 import pandas as pd
 import numpy as np
 from io import StringIO
@@ -17,8 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FILE_NAME = "Stacking_fp.pkl"
-model = joblib.load(FILE_NAME)
+model = joblib.load("Stacking_fp.pkl")
 
 @app.get("/")
 async def root():
