@@ -19,10 +19,11 @@ app.add_middleware(
 
 model = joblib.load("Stacking_fp.pkl")
 path = "tle.csv"
+df = pd.DataFrame()
 df = pd.read_csv(
     path,
     comment='#',      # ignore metadata lines starting with '#'
-    engine='python',  # more forgiving parser
+    na_values='null'  # treat 'null' as NaN
 )
 
 def que_pruebe(content):
