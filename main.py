@@ -1,7 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import joblib, os, sys
+import joblib, os
 import pandas as pd
+import numpy as np
+from io import StringIO
+from sklearn.preprocessing import StandardScaler
 
 app = FastAPI()
 
@@ -14,26 +17,55 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_FILE_NAME = "stacking.pkl"
-
+FILE_NAME = "stacking.pkl"
+model = joblib.load(FILE_NAME)
 
 @app.get("/")
 async def root():
     return {"message": "Hello from FastAPI on Render!"}
 
-
 @app.get("/deploy")
 async def deploy():
     return {"message": "Deploy endpoint working!"}
 
-
 @app.post("/upload-csv/")
 async def upload_csv(file: UploadFile = File(...)):
+    # Read CSV
+    content = await file.read()
     try:
-        content = await file.read()
-        df = pd.read_csv(pd.compat.StringIO(content.decode("utf-8")))
-        return {"rows": df.shape[0], "columns": df.shape[1]}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error reading CSV: {str(e)}")
+        df = pd.read_csv(StringIO(content.decode("utf-8")))
+    except Exception:
+        try:
+            df = pd.read_csv(StringIO(content.decode("latin-1")))
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Error parsing CSV: {e}")
 
+    # Drop unwanted columns
+    drop = [
+        'rowid','kepid','kepoi_name','kepler_name','koi_pdisposition',
+        'koi_score','koi_teq_err1','koi_teq_err2','koi_tce_delivname',
+        'koi_fpflag_nt','koi_fpflag_ss','koi_fpflag_co','koi_fpflag_ec'
+    ]
+    df = df.drop(columns=[c for c in drop if c in df.columns], errors="ignore")
 
+    # Replace NaN with median
+    df = df.fillna(df.median(numeric_only=True))
+
+    # Split features
+    if 'koi_disposition' in df.columns:
+        df = df.drop(columns=['koi_disposition'], errors='ignore')
+    if 'target' in df.columns:
+        df = df.drop(columns=['target'], errors='ignore')
+
+    # Drop non-numeric columns
+    non_numeric_cols = df.select_dtypes(exclude=np.number).columns.tolist()
+    X = df.drop(columns=non_numeric_cols)
+
+    # Scale features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Make predictions
+    preds = model.predict(X_scaled)
+
+    return {"predictions": preds.tolist()}
