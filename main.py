@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FILE_NAME = "stacking.pkl"
+FILE_NAME = "Stacking_fp.pkl"
 model = joblib.load(FILE_NAME)
 
 @app.get("/")
